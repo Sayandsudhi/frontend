@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+  patientProfile PatientProfile?
+  bookings       Booking[]
+  familyLinks    FamilyLink[]     @relation("FamilyMember")
+  linkedPatients FamilyLink[]     @relation("Patient")
+}
+
+model PatientProfile {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String   @unique @db.ObjectId
+  user           User     @relation(fields: [userId], references: [id])
+  fullName       String
+  dateOfBirth    DateTime?
+  medicalConditions String[]
+  emergencyContact String
+  mobilityNeeds  String?  // e.g., "Wheelchair", "Stretcher"
+  homeAddress    String
+  createdAt      DateTime @default(now())
+}
+
+model Booking {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  patientId      String   @db.ObjectId
+  patient        User     @relation(fields: [patientId], references: [id])
+  serviceType    String   // "Emergency", "Transport", "Helper", "Dialysis"
+  status         String   @default("PENDING") // "PENDING", "ASSIGNED", "IN_PROGRESS", "COMPLETED"
+  pickupLocation String
+  dropoffLocation String
+  driverId       String?
+  scheduledTime  DateTime?
+  createdAt      DateTime @default(now())
+}
+
+model FamilyLink {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  familyMemberId String   @db.ObjectId
+  familyMember   User     @relation("FamilyMember", fields: [familyMemberId], references: [id])
+  patientId      String   @db.ObjectId
+  patient        User     @relation("Patient", fields: [patientId], references: [id])
+  relationship   String
+  permissions    String[] // "VIEW_LOCATION", "BOOK_RIDE"
+  createdAt      DateTime @default(now())
+}
