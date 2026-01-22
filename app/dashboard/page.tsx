@@ -200,12 +200,30 @@ export default function Dashboard() {
                     ) : (
                         <div className="space-y-4">
                             {bookings.map((booking) => (
-                                <div key={booking.id} className="flex justify-between items-center p-3 bg-slate-900/50 rounded-lg border border-slate-700">
+                                <div key={booking.id} className="flex justify-between items-center p-3 bg-slate-900/50 rounded-lg border border-slate-700 group">
                                     <div>
                                         <p className="font-medium text-teal-400">{booking.serviceType}</p>
                                         <p className="text-xs text-slate-400">{booking.pickupLocation} ➔ {booking.dropoffLocation}</p>
                                     </div>
-                                    <span className="text-xs px-2 py-1 bg-yellow-500/20 text-yellow-500 rounded-full">{booking.status}</span>
+                                    <div className="flex items-center gap-3">
+                                        <span className={`text-xs px-2 py-1 rounded-full ${booking.status === 'URGENT_DISPATCH' ? 'bg-red-500/20 text-red-500 transform animate-pulse' : 'bg-yellow-500/20 text-yellow-500'}`}>
+                                            {booking.status}
+                                        </span>
+                                        <button
+                                            onClick={async () => {
+                                                if (confirm('Cancel this booking?')) {
+                                                    try {
+                                                        await api.delete(`/bookings?id=${booking.id}`);
+                                                        fetchDashboardData();
+                                                    } catch (e) { alert('Failed to cancel'); }
+                                                }
+                                            }}
+                                            className="w-8 h-8 flex items-center justify-center rounded-full bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                                            title="Cancel Booking"
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>

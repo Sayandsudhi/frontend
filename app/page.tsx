@@ -11,7 +11,7 @@ export default function Home() {
       <div className="z-10 w-full flex flex-col items-center gap-8">
         <div className="text-center space-y-2">
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 to-purple-400">
-            NextGen Auth
+            D-care
           </h1>
           <p className="text-slate-400 text-lg md:text-xl max-w-lg mx-auto">
             Experience the future of secure and seamless authentication.

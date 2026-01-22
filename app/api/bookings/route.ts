@@ -41,6 +41,32 @@ export async function POST(request: Request) {
     }
 }
 
+export async function DELETE(request: Request) {
+    const userId = await getUserFromToken(request);
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    try {
+        const { searchParams } = new URL(request.url);
+        const bookingId = searchParams.get('id');
+
+        if (!bookingId) {
+            return NextResponse.json({ error: 'Booking ID required' }, { status: 400 });
+        }
+
+        await prisma.booking.delete({
+            where: {
+                id: bookingId,
+                patientId: userId // Ensure user owns the booking
+            }
+        });
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error('Booking delete error:', error);
+        return NextResponse.json({ error: 'Error deleting booking' }, { status: 500 });
+    }
+}
+
 export async function GET(request: Request) {
     const userId = await getUserFromToken(request);
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

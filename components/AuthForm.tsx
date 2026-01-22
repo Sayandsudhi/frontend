@@ -122,7 +122,16 @@ export default function AuthForm() {
                         disabled={loading}
                         className="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold rounded-lg shadow-lg hover:shadow-indigo-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {loading ? 'Processing...' : (isLogin ? 'Login' : 'Start Account')}
+                        {loading ? (
+                            <div className="flex items-center justify-center gap-2">
+                                <motion.div
+                                    animate={{ rotate: 360 }}
+                                    transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                                    className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                                />
+                                <span>Processing...</span>
+                            </div>
+                        ) : (isLogin ? 'Login' : 'Start Account')}
                     </motion.button>
                 </motion.form>
             </AnimatePresence>
