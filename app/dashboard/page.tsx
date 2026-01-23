@@ -9,6 +9,7 @@ import TrackingMap from '@/components/TrackingMap';
 import ProfileModal from '@/components/ProfileModal';
 import BookingModal from '@/components/BookingModal';
 import api from '@/lib/api';
+import DashboardLoader from '@/components/DashboardLoader';
 
 export default function Dashboard() {
     const router = useRouter();
@@ -70,7 +71,7 @@ export default function Dashboard() {
         setSelectedService(service);
     };
 
-    if (loading || !user) return <div className="text-white text-center mt-20">Loading dashboard...</div>;
+    if (loading || !user) return <DashboardLoader />;
 
     return (
         <main className="min-h-screen bg-slate-900 text-white relative overflow-x-hidden pb-20">
