@@ -3,9 +3,14 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../lib/api';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
-export default function AuthForm() {
-    const [isLogin, setIsLogin] = useState(true);
+interface AuthFormProps {
+    mode: 'login' | 'signup';
+}
+
+export default function AuthForm({ mode }: AuthFormProps) {
+    const isLogin = mode === 'login';
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -27,13 +32,8 @@ export default function AuthForm() {
                 localStorage.setItem('user', JSON.stringify(data.user));
                 router.push('/dashboard');
             } else {
-                // After signup, switch to login or auto-login. 
-                // For simplicity/UX, let's switch to login and fill fields or just auto login?
-                // Let's auto login immediately for better UX
-                const loginRes = await api.post('/auth/login', { email, password });
-                localStorage.setItem('token', loginRes.data.token);
-                localStorage.setItem('user', JSON.stringify(loginRes.data.user));
-                router.push('/dashboard');
+                // After signup, redirect to login page
+                router.push('/login');
             }
         } catch (err: any) {
             setError(err.response?.data?.error || 'Something went wrong');
@@ -51,23 +51,23 @@ export default function AuthForm() {
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     style={{ left: '1%' }} // Adjust based on padding
                 />
-                <button
-                    onClick={() => { setIsLogin(true); setError(''); }}
-                    className={`flex-1 relative z-10 py-2 text-sm font-medium transition-colors duration-200 ${isLogin ? 'text-white' : 'text-slate-400 hover:text-white'}`}
+                <Link
+                    href="/login"
+                    className={`flex-1 relative z-10 py-2 text-sm font-medium text-center transition-colors duration-200 ${isLogin ? 'text-white' : 'text-slate-400 hover:text-white'}`}
                 >
                     Login
-                </button>
-                <button
-                    onClick={() => { setIsLogin(false); setError(''); }}
-                    className={`flex-1 relative z-10 py-2 text-sm font-medium transition-colors duration-200 ${!isLogin ? 'text-white' : 'text-slate-400 hover:text-white'}`}
+                </Link>
+                <Link
+                    href="/signup"
+                    className={`flex-1 relative z-10 py-2 text-sm font-medium text-center transition-colors duration-200 ${!isLogin ? 'text-white' : 'text-slate-400 hover:text-white'}`}
                 >
                     Sign Up
-                </button>
+                </Link>
             </div>
 
             <AnimatePresence mode="wait">
                 <motion.form
-                    key={isLogin ? 'login' : 'signup'}
+                    key={mode}
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
